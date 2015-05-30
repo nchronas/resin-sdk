@@ -45,6 +45,7 @@ OSParams = require('./os-params')
 ###
 exports.download = (parameters, destination, callback, onProgress) ->
 
+	console.log(' New version');
 	if not token.getUsername()?
 		return callback(new errors.ResinNotLoggedIn())
 
@@ -53,11 +54,20 @@ exports.download = (parameters, destination, callback, onProgress) ->
 	query = url.format(query: parameters)
 	downloadUrl = url.resolve('/download', query)
 
-	request.request
-		method: 'GET'
-		url: downloadUrl
-		pipe: fs.createWriteStream(destination)
-	, (error) ->
-		return callback(error) if error?
-		return callback(null, destination)
-	, onProgress
+ 	#file_name = url.parse(file_url).pathname.split('/').pop();
+    
+    wget = 'wget -P ' + destination + ' ' + downloadUrl;
+    
+    child = exec(wget, (err, stdout, stderr) ->
+        if (err) throw err;
+        else console.log(' downloaded to ');
+    )
+
+	#request.request
+	#	method: 'GET'
+	#	url: downloadUrl
+	#	pipe: fs.createWriteStream(destination)
+	#, (error) ->
+	#	return callback(error) if error?
+	#	return callback(null, destination)
+	#, onProgress
